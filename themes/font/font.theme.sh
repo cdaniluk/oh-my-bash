@@ -21,6 +21,9 @@
 # 07:45:05 (venv) user@host ~ →
 #
 
+SHOW_AWS_PROMPT=true
+BASH_THEME_AWS_PREFIX="[AWS:"
+BASH_THEME_AWS_SUFFIX="] "
 SCM_NONE_CHAR=''
 SCM_THEME_PROMPT_DIRTY=" ${red}✗"
 SCM_THEME_PROMPT_CLEAN=""
@@ -30,7 +33,7 @@ SCM_GIT_SHOW_MINIMAL_INFO=true
 
 CLOCK_THEME_PROMPT_PREFIX=''
 CLOCK_THEME_PROMPT_SUFFIX=' '
-THEME_SHOW_CLOCK=true
+THEME_SHOW_CLOCK=false
 THEME_CLOCK_COLOR=${THEME_CLOCK_COLOR:-"$bold_blue"}
 THEME_CLOCK_FORMAT=${THEME_CLOCK_FORMAT:-"%I:%M:%S"}
 
@@ -54,7 +57,24 @@ function prompt_command() {
     # Append new history lines to history file
     history -a
 
-    PS1="$(clock_prompt)${virtualenv}${hostname} ${bold_cyan}\W $(scm_prompt_char_info)${ret_status}→ ${normal}"
+    PS1="$(aws_prompt_info)${virtualenv}\u:${bold_cyan}\w $(scm_prompt_char_info)${ret_status}→ ${normal}"
+}
+
+# AWS prompt
+function aws_prompt_info() {
+  [[ -z $AWS_PROFILE ]] && return
+  echo "${BASH_THEME_AWS_PREFIX:=<aws:}${AWS_PROFILE}${BASH_THEME_AWS_SUFFIX:=>}"
+}
+
+# Custom functions
+awslogin() {
+    aws-okta login ${AWS_PROFILE}-okta
+}
+
+function awsprofiles() {
+  [[ -n $1 ]] && FILTER=$1
+  [[ -r "${AWS_CONFIG_FILE:-$HOME/.aws/config}" ]] || return 1
+  grep '\[profile' "${AWS_CONFIG_FILE:-$HOME/.aws/config}"|sed -e 's/.*profile \([a-zA-Z0-9_\.-]*\).*/\1/' | grep -v "\(-login\|-okta\)$" | grep "${FILTER:-.*}"
 }
 
 safe_append_prompt_command prompt_command

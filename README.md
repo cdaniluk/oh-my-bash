@@ -1,3 +1,13 @@
+
+# Fork
+I've modified the `font` theme to suit my purposes.  The prompt will show your active `AWS_PROFILE`, virtual environment, git branch, and whether your repo is clean or dirty. It will also signal whether your most recent command exited cleanly or not.
+
+There are two useful functions (if you use `aws-okta` the way we do at Rhythmic):
+
+* **awslogin** - logs into the AWS console for the account specified by `AWS_PROFILE`
+* **awsprofiles** - list all profiles in `~/.aws/config`. Pass an arg to filter results.
+
+# Original README
 Oh My Bash is an open source, community-driven framework for managing your [bash](https://www.gnu.org/software/bash/) configuration.
 
 Sounds boring. Let's try again.
